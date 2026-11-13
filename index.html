@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychology & Brain Science Club (PBS)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        pbs: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        brain: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brain-100 selection:text-brain-900">
+
+    <!-- ========================================== -->
+    <!-- LOGIN GATE OVERLAY                         -->
+    <!-- ========================================== -->
+    <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 border border-slate-100 transform transition-all">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-brain-100 text-brain-700 rounded-2xl mb-4 shadow-inner">
+                    <i class="fa-solid fa-brain text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-900">PBS Club Portal</h1>
+                <p class="text-sm text-slate-500 mt-1">Psychology & Brain Science Club Member Access</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Club Passcode</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="passcode-input" required placeholder="Enter shared club passcode..." 
+                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brain-600 focus:bg-white transition">
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1.5 italic">Hint: Try entering <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brain-700 font-mono">pbs2027</code></p>
+                </div>
+
+                <div id="login-error" class="hidden text-xs text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Incorrect passcode. Please ask club officers for access.</span>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-brain-700 hover:bg-brain-800 text-white font-medium rounded-xl shadow-lg shadow-brain-700/20 transition flex items-center justify-center gap-2">
+                    <span>Enter Portal</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-400">Open to students from all majors exploring mind, behavior & neuroscience.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MAIN APPLICATION CONTAINER                 -->
+    <!-- ========================================== -->
+    <div id="app-container" class="hidden h-full flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 border-r border-slate-800">
+            <div>
+                <!-- Brand Header -->
+                <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brain-600 to-pbs-500 flex items-center justify-center text-white shadow-md">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-white text-lg tracking-tight leading-tight">PBS Club</h2>
+                        <span class="text-xs text-slate-400">Psychology & Brain Science</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links (Ordered by Importance: Project, References, Announcement, Members, Calendar, Books, Contact) -->
+                <nav class="p-4 space-y-1.5">
+                    <p class="px-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase mb-2">Main Navigation</p>
+                    
+                    <button onclick="switchTab('project')" id="nav-project" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-diagram-project w-5 text-center text-brain-400"></i>
+                        <span>Project</span>
+                        <span class="ml-auto bg-brain-900 text-brain-300 text-[10px] px-2 py-0.5 rounded-full font-bold">#1</span>
+                    </button>
+
+                    <button onclick="switchTab('references')" id="nav-references" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-book-bookmark w-5 text-center text-emerald-400"></i>
+                        <span>References</span>
+                        <span class="ml-auto bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold">#2</span>
+                    </button>
+
+                    <button onclick="switchTab('announcements')" id="nav-announcements" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-bullhorn w-5 text-center text-amber-400"></i>
+                        <span>Announcement</span>
+                        <span class="ml-auto bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold">#3</span>
+                    </button>
+
+                    <button onclick="switchTab('members')" id="nav-members" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-users w-5 text-center text-sky-400"></i>
+                        <span>Members</span>
+                        <span class="ml-auto bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold">#4</span>
+                    </button>
+
+                    <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-calendar-days w-5 text-center text-rose-400"></i>
+                        <span>Calendar</span>
+                        <span class="ml-auto bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold">#5</span>
+                    </button>
+
+                    <button onclick="switchTab('books')" id="nav-books" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-book-open w-5 text-center text-indigo-400"></i>
+                        <span>Books</span>
+                        <span class="ml-auto bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold">#6</span>
+                    </button>
+
+                    <button onclick="switchTab('contact')" id="nav-contact" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                        <i class="fa-solid fa-address-book w-5 text-center text-teal-400"></i>
+                        <span>Contact Officers</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Sidebar Footer / Logout -->
+            <div class="p-4 border-t border-slate-800">
+                <div class="bg-slate-800/50 rounded-xl p-3 mb-3 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-brain-600 text-white flex items-center justify-center font-bold text-xs">
+                        PBS
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-semibold text-white truncate">Verified Member</p>
+                        <p class="text-[10px] text-slate-400 truncate">Access Granted</p>
+                    </div>
+                </div>
+                <button onclick="handleLogout()" class="w-full py-2 px-3 bg-slate-800 hover:bg-red-950/40 hover:text-red-400 hover:border-red-950 border border-slate-700 rounded-xl text-xs font-medium transition flex items-center justify-center gap-2 text-slate-400">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Lock Portal</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-full overflow-y-auto">
+            
+            <!-- Top Header Bar -->
+            <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+                <div>
+                    <h1 id="page-title" class="text-xl font-bold text-slate-900 tracking-tight">Project Hub</h1>
+                    <p id="page-subtitle" class="text-xs text-slate-500">Collaborative research paper writing & peer review framework</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2 bg-brain-50 text-brain-800 px-3 py-1.5 rounded-full text-xs font-medium border border-brain-100">
+                        <i class="fa-solid fa-shield-halved text-brain-600"></i>
+                        <span>Secure Passcode Active</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Views Container -->
+            <div class="p-6 md:p-8 max-w-6xl mx-auto w-full space-y-6">
+
+                <!-- ================= TAB 1: PROJECT ================= -->
+                <div id="tab-project" class="tab-content space-y-6">
+                    <!-- Goals banner -->
+                    <div class="bg-gradient-to-r from-brain-800 to-brain-900 rounded-2xl p-6 text-white shadow-xl">
+                        <span class="bg-brain-700/80 text-brain-200 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">Club Mission #1 & #2 & #3</span>
+                        <h2 class="text-2xl font-bold mt-3 mb-2">Research Paper Collaboration Platform</h2>
+                        <p class="text-brain-100 text-sm max-w-3xl leading-relaxed">
+                            Designed for students from all majors to get comfortable with research, build writing expertise, and master the anatomy of a research article through peer collaboration.
+                        </p>
+                    </div>
+
+                    <!-- Article Anatomy Interactive Guide -->
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-file-lines text-brain-600"></i>
+                            Anatomy of a Research Article
+                        </h3>
+                        <p class="text-xs text-slate-500 mb-4">Click each section to inspect its structural purpose and tips for writing.</p>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
+                            <button onclick="showAnatomy('abstract')" class="anatomy-tab p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brain-50 hover:border-brain-300 text-center transition font-semibold text-xs text-slate-700 active-anatomy">Abstract</button>
+                            <button onclick="showAnatomy('intro')" class="anatomy-tab p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brain-50 hover:border-brain-300 text-center transition font-semibold text-xs text-slate-700">Introduction</button>
+                            <button onclick="showAnatomy('methods')" class="anatomy-tab p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brain-50 hover:border-brain-300 text-center transition font-semibold text-xs text-slate-700">Methods</button>
+                            <button onclick="showAnatomy('results')" class="anatomy-tab p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brain-50 hover:border-brain-300 text-center transition font-semibold text-xs text-slate-700">Results</button>
+                            <button onclick="showAnatomy('discussion')" class="anatomy-tab p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brain-50 hover:border-brain-300 text-center transition font-semibold text-xs text-slate-700">Discussion</button>
+                            <button onclick="showAnatomy('references')" class="anatomy-tab p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brain-50 hover:border-brain-300 text-center transition font-semibold text-xs text-slate-700">References</button>
+                        </div>
+
+                        <div id="anatomy-display" class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                            <h4 id="anatomy-title" class="font-bold text-brain-900 text-base mb-1">Abstract</h4>
+                            <p id="anatomy-desc" class="text-xs text-slate-600 leading-relaxed mb-3">A concise summary (150-250 words) of the entire research paper, outlining the research question, methods, key findings, and implications.</p>
+                            <div class="flex items-center gap-2 text-[11px] text-slate-500 font-medium bg-white p-2.5 rounded-lg border border-slate-200">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                <span id="anatomy-tip">Tip: Write the abstract last after all other sections are completed.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Club Writing Projects & Peer Groups -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Active Cohort</span>
+                                    <span class="text-xs text-slate-400 font-medium">Lead: Dr. Marcus & Sarah T.</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-lg mb-2">Project: Neuroplasticity & Sleep Consolidations</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-4">Investigating how slow-wave sleep cycles impact memory retention and emotional regulation among undergraduate student cohorts.</p>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-xs font-semibold text-slate-700">
+                                        <span>Drafting Progress</span>
+                                        <span>75%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2">
+                                        <div class="bg-emerald-500 h-2 rounded-full" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="triggerProjectModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-comments"></i>
+                                <span>Join Peer Collaboration Group</span>
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="bg-brain-100 text-brain-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Starting Soon</span>
+                                    <span class="text-xs text-slate-400 font-medium">Lead: Alex Rivera</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-lg mb-2">Project: Social Media Algorithmic Dopamine Loops</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-4">A behavioral study analyzing variable reward schedules in short-form video platforms and their correlation with attention span deficits.</p>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-xs font-semibold text-slate-700">
+                                        <span>Literature Review Phase</span>
+                                        <span>30%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2">
+                                        <div class="bg-brain-600 h-2 rounded-full" style="width: 30%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="triggerProjectModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Sign Up For This Team</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 2: REFERENCES ================= -->
+                <div id="tab-references" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900">Curated Research References</h2>
+                                <p class="text-xs text-slate-500">APA-formatted sources, databases, and writing guides for PBS members.</p>
+                            </div>
+                            <div class="relative">
+                                <input type="text" id="ref-search" oninput="filterReferences()" placeholder="Search references..." 
+                                    class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brain-600 w-full sm:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+
+                        <div id="reference-list" class="space-y-3">
+                            <!-- Ref 1 -->
+                            <div class="ref-item p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Neuroscience</span>
+                                        <h4 class="font-semibold text-slate-900 text-sm mt-1">Walker, M. P. (2017). Why We Sleep: Unlocking the Power of Sleep and Dreams.</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Scribner. Comprehensive exploration of sleep architecture, memory consolidation, and brain health.</p>
+                                    </div>
+                                    <button onclick="copyRef(this)" class="text-slate-400 hover:text-brain-600 p-2 rounded-lg transition shrink-0" title="Copy Citation">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Ref 2 -->
+                            <div class="ref-item p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Behavioral Psychology</span>
+                                        <h4 class="font-semibold text-slate-900 text-sm mt-1">Kahneman, D. (2011). Thinking, Fast and Slow.</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Farrar, Straus and Giroux. Seminal work on System 1 (fast, intuitive) and System 2 (slow, logical) cognitive thinking.</p>
+                                    </div>
+                                    <button onclick="copyRef(this)" class="text-slate-400 hover:text-brain-600 p-2 rounded-lg transition shrink-0" title="Copy Citation">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Ref 3 -->
+                            <div class="ref-item p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Cognitive Science</span>
+                                        <h4 class="font-semibold text-slate-900 text-sm mt-1">Sapolsky, R. M. (2017). Behave: The Biology of Humans at Our Best and Worst.</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Penguin Press. An interdisciplinary look at neuroscience, evolutionary biology, and sociology shaping human action.</p>
+                                    </div>
+                                    <button onclick="copyRef(this)" class="text-slate-400 hover:text-brain-600 p-2 rounded-lg transition shrink-0" title="Copy Citation">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 3: ANNOUNCEMENT ================= -->
+                <div id="tab-announcements" class="tab-content hidden space-y-6">
+                    <div class="space-y-4">
+                        <!-- Announcement Card 1 -->
+                        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm border-l-4 border-l-brain-600">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full">Important Update</span>
+                                <span class="text-xs text-slate-400">October 24, 2026</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-2">Spring Research Symposium Submissions Open!</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                All PBS club members are invited to submit their abstract drafts for the upcoming campus-wide undergraduate research symposium. Officers will host a special workshop this Thursday on crafting effective abstracts.
+                            </p>
+                            <div class="flex items-center gap-2 text-xs text-brain-700 font-semibold">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>Science Hall Room 302 & Zoom (Hybrid) • 6:00 PM</span>
+                            </div>
+                        </div>
+
+                        <!-- Announcement Card 2 -->
+                        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full">New Book Club Pick</span>
+                                <span class="text-xs text-slate-400">October 18, 2026</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-2">Neuroliterature Reading Selection Announced</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                This month we are diving into Oliver Sacks' <span class="italic">"The Man Who Mistook His Wife for a Hat"</span>. Pick up your copy from the club library or join our digital discussion thread.
+                            </p>
+                            <div class="flex items-center gap-2 text-xs text-emerald-700 font-semibold">
+                                <i class="fa-solid fa-calendar-check"></i>
+                                <span>Discussion scheduled for next Tuesday</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 4: MEMBERS ================= -->
+                <div id="tab-members" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900">PBS Club Directory & Peer Network</h2>
+                                <p class="text-xs text-slate-500">Connect with students across all majors studying psychology and brain science.</p>
+                            </div>
+                            <span class="bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full w-fit">48 Active Members</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <!-- Member Card -->
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-brain-600 text-white font-bold flex items-center justify-center text-sm shadow-inner">
+                                    ET
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">Elena Thorne</h4>
+                                    <p class="text-[11px] text-slate-500">Psychology & Biology (Senior)</p>
+                                    <span class="inline-block mt-1 bg-emerald-100 text-emerald-800 text-[9px] font-semibold px-2 py-0.5 rounded">Peer Mentor</span>
+                                </div>
+                            </div>
+
+                            <!-- Member Card -->
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-sm shadow-inner">
+                                    JD
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">Julian Davis</h4>
+                                    <p class="text-[11px] text-slate-500">Computer Science (Junior)</p>
+                                    <span class="inline-block mt-1 bg-brain-100 text-brain-800 text-[9px] font-semibold px-2 py-0.5 rounded">Neuro-Tech Lead</span>
+                                </div>
+                            </div>
+
+                            <!-- Member Card -->
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-rose-600 text-white font-bold flex items-center justify-center text-sm shadow-inner">
+                                    AM
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">Aaliyah Malik</h4>
+                                    <p class="text-[11px] text-slate-500">Philosophy & Neuroscience (Soph.)</p>
+                                    <span class="inline-block mt-1 bg-indigo-100 text-indigo-800 text-[9px] font-semibold px-2 py-0.5 rounded">Researcher</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 5: CALENDAR ================= -->
+                <div id="tab-calendar" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-slate-900">Upcoming Club Events & Workshops</h2>
+                            <span class="text-xs text-slate-500 font-medium"><i class="fa-solid fa-clock text-rose-500 mr-1"></i> Fall Semester Schedule</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Event 1 -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200 gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="bg-rose-100 text-rose-700 p-3 rounded-xl text-center shrink-0 w-16">
+                                        <span class="block text-[10px] font-bold uppercase">Nov</span>
+                                        <span class="block text-lg font-extrabold leading-tight">18</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm">Research Paper Anatomy & Structuring Workshop</h4>
+                                        <p class="text-xs text-slate-500 mt-0.5">Learn how to format abstracts, methodology, and citations properly.</p>
+                                    </div>
+                                </div>
+                                <span class="bg-rose-50 text-rose-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-100 shrink-0">5:30 PM - 7:00 PM</span>
+                            </div>
+
+                            <!-- Event 2 -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200 gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="bg-rose-100 text-rose-700 p-3 rounded-xl text-center shrink-0 w-16">
+                                        <span class="block text-[10px] font-bold uppercase">Nov</span>
+                                        <span class="block text-lg font-extrabold leading-tight">25</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm">Neuroliterature Book Club Discussion</h4>
+                                        <p class="text-xs text-slate-500 mt-0.5">Reviewing Oliver Sacks' case studies on neurological anomalies.</p>
+                                    </div>
+                                </div>
+                                <span class="bg-rose-50 text-rose-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-rose-100 shrink-0">6:00 PM - 7:30 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 6: BOOKS ================= -->
+                <div id="tab-books" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <div class="mb-6">
+                            <span class="bg-indigo-100 text-indigo-800 text-[10px] font-bold uppercase px-2.5 py-1 rounded-full">Club Mission #5</span>
+                            <h2 class="text-xl font-bold text-slate-900 mt-2">Neuroliterature & Mind Studies Library</h2>
+                            <p class="text-xs text-slate-500 mt-1">Recommended reading list for students exploring behavioral science, neuro-narratives, and psychology.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                            <!-- Book Item -->
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="h-36 bg-gradient-to-tr from-indigo-700 to-brain-600 rounded-lg mb-3 flex items-center justify-center text-white p-4 text-center shadow-inner">
+                                        <i class="fa-solid fa-book text-3xl opacity-80"></i>
+                                    </div>
+                                    <h4 class="font-bold text-slate-900 text-sm">The Man Who Mistook His Wife for a Hat</h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">Oliver Sacks</p>
+                                    <p class="text-xs text-slate-600 mt-2 leading-relaxed">Fascinating clinical tales exploring neurological disorders and human consciousness.</p>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                                    <span class="text-emerald-600 font-semibold"><i class="fa-solid fa-check mr-1"></i> Available in Club</span>
+                                </div>
+                            </div>
+
+                            <!-- Book Item -->
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="h-36 bg-gradient-to-tr from-purple-700 to-indigo-600 rounded-lg mb-3 flex items-center justify-center text-white p-4 text-center shadow-inner">
+                                        <i class="fa-solid fa-book text-3xl opacity-80"></i>
+                                    </div>
+                                    <h4 class="font-bold text-slate-900 text-sm">Phantoms in the Brain</h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">V.S. Ramachandran & Sandra Blakeslee</p>
+                                    <p class="text-xs text-slate-600 mt-2 leading-relaxed">Probing the mysteries of the human mind through extraordinary neurological case studies.</p>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                                    <span class="text-emerald-600 font-semibold"><i class="fa-solid fa-check mr-1"></i> Available in Club</span>
+                                </div>
+                            </div>
+
+                            <!-- Book Item -->
+                            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <div class="h-36 bg-gradient-to-tr from-brain-800 to-emerald-700 rounded-lg mb-3 flex items-center justify-center text-white p-4 text-center shadow-inner">
+                                        <i class="fa-solid fa-book text-3xl opacity-80"></i>
+                                    </div>
+                                    <h4 class="font-bold text-slate-900 text-sm">The Tell-Tale Brain</h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">V.S. Ramachandran</p>
+                                    <p class="text-xs text-slate-600 mt-2 leading-relaxed">Unlocking the evolutionary origins of human nature, art, and language.</p>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                                    <span class="text-amber-600 font-semibold"><i class="fa-solid fa-clock mr-1"></i> Checked Out</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 7: CONTACT OFFICERS ================= -->
+                <div id="tab-contact" class="tab-content hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-bold text-slate-900">Contact PBS Officers</h2>
+                            <p class="text-xs text-slate-500 mt-1">Reach out with questions about research papers, membership, or peer groups.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                            <!-- Officer 1 -->
+                            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                                <div class="w-16 h-16 rounded-full bg-brain-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-3 shadow-md">
+                                    DR
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm">Dr. David Reynolds</h4>
+                                <p class="text-xs text-brain-700 font-medium mb-2">Club President & Faculty Advisor</p>
+                                <p class="text-[11px] text-slate-500">dreynolds@university.edu</p>
+                            </div>
+
+                            <!-- Officer 2 -->
+                            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                                <div class="w-16 h-16 rounded-full bg-emerald-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-3 shadow-md">
+                                    SK
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm">Sophia Khan</h4>
+                                <p class="text-xs text-emerald-700 font-medium mb-2">Vice President of Research</p>
+                                <p class="text-[11px] text-slate-500">skhan@university.edu</p>
+                            </div>
+
+                            <!-- Officer 3 -->
+                            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                                <div class="w-16 h-16 rounded-full bg-amber-600 text-white font-bold text-lg flex items-center justify-center mx-auto mb-3 shadow-md">
+                                    LN
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm">Liam Nguyen</h4>
+                                <p class="text-xs text-amber-700 font-medium mb-2">Treasurer & Events Coordinator</p>
+                                <p class="text-[11px] text-slate-500">lnguyen@university.edu</p>
+                            </div>
+                        </div>
+
+                        <!-- Direct Message Form -->
+                        <div class="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                            <h3 class="font-bold text-slate-900 text-sm mb-3">Send a Message to the Officer Board</h3>
+                            <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Your Name</label>
+                                        <input type="text" required placeholder="Full name..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brain-600">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Your Email / Major</label>
+                                        <input type="text" required placeholder="Email or major..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brain-600">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Message</label>
+                                    <textarea rows="3" required placeholder="How can the officers help you?" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brain-600"></textarea>
+                                </div>
+                                <button type="submit" class="py-2.5 px-6 bg-brain-700 hover:bg-brain-800 text-white font-semibold text-xs rounded-lg transition">
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast / Modal Box -->
+    <div id="toast-notification" class="hidden fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-slate-700 text-xs flex items-center gap-3 animate-bounce">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toast-message">Action completed successfully!</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Shared Passcode Configuration
+        const CLUB_PASSCODE = "pbs2027";
+
+        // Check if user is already logged in during session
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('pbs_auth') === 'true') {
+                unlockApp();
+            }
+        });
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const inputVal = document.getElementById('passcode-input').value.trim();
+            const errorEl = document.getElementById('login-error');
+
+            if (inputVal === CLUB_PASSCODE) {
+                sessionStorage.setItem('pbs_auth', 'true');
+                unlockApp();
+            } else {
+                errorEl.classList.remove('hidden');
+                document.getElementById('passcode-input').classList.add('border-red-500');
+            }
+        }
+
+        function unlockApp() {
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            switchTab('project'); // Default landing on Project (#1 priority)
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('pbs_auth');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-overlay').classList.remove('hidden');
+            document.getElementById('passcode-input').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+        }
+
+        // Tab Switching Logic
+        const tabTitles = {
+            project: { title: "Project Hub", subtitle: "Collaborative research paper writing & peer review framework" },
+            references: { title: "References & Citations", subtitle: "Curated research sources and literature guides" },
+            announcements: { title: "Announcements", subtitle: "Latest news, symposium updates, and meeting notices" },
+            members: { title: "Members Directory", subtitle: "Connect with undergraduate researchers across all majors" },
+            calendar: { title: "Calendar & Events", subtitle: "Workshops, reading groups, and paper review sessions" },
+            books: { title: "Neuroliterature Library", subtitle: "Readings exploring human mind, behavior, and neuroscience" },
+            contact: { title: "Contact Officers", subtitle: "Get in touch with club leadership and faculty advisors" }
+        };
+
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active style from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-slate-800', 'text-white', 'shadow-sm');
+                el.classList.add('text-slate-300');
+            });
+
+            // Show target tab
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            
+            // Highlight target nav button
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-300');
+                activeBtn.classList.add('bg-slate-800', 'text-white', 'shadow-sm');
+            }
+
+            // Update Header Titles
+            if (tabTitles[tabId]) {
+                document.getElementById('page-title').innerText = tabTitles[tabId].title;
+                document.getElementById('page-subtitle').innerText = tabTitles[tabId].subtitle;
+            }
+        }
+
+        // Anatomy Tabs Interactive Data
+        const anatomyData = {
+            abstract: {
+                title: "Abstract",
+                desc: "A concise summary (150-250 words) of the entire research paper, outlining the research question, methods, key findings, and implications.",
+                tip: "Tip: Write the abstract last after all other sections are completed."
+            },
+            intro: {
+                title: "Introduction",
+                desc: "Establishes the background of the study, reviews prior psychological or neuroscience literature, states the gap in research, and proposes hypotheses.",
+                tip: "Tip: Use the 'inverted pyramid' structure—starting broad and narrowing down to your specific hypothesis."
+            },
+            methods: {
+                title: "Methods",
+                desc: "Details participant demographics, experimental design, stimuli, apparatus, and step-by-step procedures so other researchers can replicate the study.",
+                tip: "Tip: Clarity and precision are paramount here; avoid ambiguous descriptions."
+            },
+            results: {
+                title: "Results",
+                desc: "Presents statistical analyses, descriptive data, p-values, effect sizes, and graphs without speculative interpretation.",
+                tip: "Tip: Let the data speak objectively before discussing its broader meaning."
+            },
+            discussion: {
+                title: "Discussion",
+                desc: "Interprets findings in relation to existing literature, highlights study limitations, and suggests future directions for brain and behavioral research.",
+                tip: "Tip: Always acknowledge limitations honestly—it strengthens scientific credibility."
+            },
+            references: {
+                title: "References",
+                desc: "Full APA-formatted citations for every external study, book, or journal article cited throughout the manuscript.",
+                tip: "Tip: Use reference manager tools or citation generators to prevent formatting errors."
+            }
+        };
+
+        function showAnatomy(key) {
+            document.querySelectorAll('.anatomy-tab').forEach(btn => {
+                btn.classList.remove('bg-brain-50', 'border-brain-400', 'text-brain-900', 'ring-2', 'ring-brain-600/20');
+                btn.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-700');
+            });
+            event.currentTarget.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-700');
+            event.currentTarget.classList.add('bg-brain-50', 'border-brain-400', 'text-brain-900', 'ring-2', 'ring-brain-600/20');
+
+            const data = anatomyData[key];
+            if (data) {
+                document.getElementById('anatomy-title').innerText = data.title;
+                document.getElementById('anatomy-desc').innerText = data.desc;
+                document.getElementById('anatomy-tip').innerText = data.tip;
+            }
+        }
+
+        // Helper Actions
+        function copyRef(btn) {
+            const textToCopy = btn.closest('.ref-item').querySelector('h4').innerText;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast("Citation copied to clipboard!");
+        }
+
+        function triggerProjectModal() {
+            showToast("Successfully joined collaboration group! Check your email for discussion links.");
+        }
+
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            showToast("Message sent to PBS officers! They will respond shortly.");
+            event.target.reset();
+        }
+
+        function filterReferences() {
+            const query = document.getElementById('ref-search').value.toLowerCase();
+            const items = document.querySelectorAll('.ref-item');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
